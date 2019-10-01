@@ -31,6 +31,9 @@ shorten.inp(inp, mintime = 1973)
 
 ## Keep years until 1985
 shorten.inp(inp, maxtime = 1985)
+
+## Empty data set gives an error
+shorten.inp(inp, mintime = 1910, maxtime = 1930)
 }
 \seealso{
 \code{\link{check.inp}}
