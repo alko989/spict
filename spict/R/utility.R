@@ -157,16 +157,16 @@ calc.gamma <- function(n) n^(n/(n-1)) / (n-1)
 #' ## Make the south Atlantic albacore assessment
 #' data(pol)
 #' rep <- fit.spict(pol$albacore)
-#' 
+#'
 #' ## See all quantitites that can be extracted
 #' list.quantities(rep)
-#' 
+#'
 #' ## Extract the Bmsy reference point
 #' Bmsy <- get.par('logBmsy', rep, exp=TRUE)
-#' 
+#'
 #' ## Extract the exploitable biomass estimates
 #' Best <- get.par('logB', rep, exp=TRUE)
-#' 
+#'
 #' ## Extract the estimated caryting capacity
 #' K <- get.par('logK', rep, exp=TRUE)
 get.par <- function(parname, rep=rep, exp=FALSE, random=FALSE, fixed=FALSE){
@@ -684,8 +684,8 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
         }
         if (!inpout$eulertype %in% c('soft', 'hard'))
             stop('inp$eulertype must be either "soft" or "hard"!')
-    }    
-    
+    }
+
     inpout$dt <- inpout$dt[inpin$time %in% inpout$time]
     inpout$ns <- length(inpout$time)
 
@@ -707,17 +707,17 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
         inpout$true$logmre <- inpout$true$logmre[inpin$time %in% inpout$time]
         inpout$true$SARvec <- inpout$true$SARvec[inpin$time %in% inpout$time]
         inpout$true$time <- inpout$true$time[inpin$time %in% inpout$time]
-        inds <- get.inds(inpin$timeC,mintime,maxtime)                
+        inds <- get.inds(inpin$timeC,mintime,maxtime)
         inpout$true$C <- inpout$true$C[inds]
         inpout$true$e.c <- inpout$true$e.c[inds]
         if(length(inpin$true$E) > 0){
-            inds <- get.inds(inpin$timeE,mintime,maxtime)                        
+            inds <- get.inds(inpin$timeE,mintime,maxtime)
             inpout$true$E <- inpout$true$E[inds]
-            inpout$true$e.e <- inpout$true$e.e[inds]            
+            inpout$true$e.e <- inpout$true$e.e[inds]
         }
-        if(length(inpin$true$I) > 0){        
+        if(length(inpin$true$I) > 0){
             for(i in 1:length(inpout$true$I)){
-                inds <- get.inds(inpin$timeI[[i]],mintime,maxtime)                                    
+                inds <- get.inds(inpin$timeI[[i]],mintime,maxtime)
                 inpout$true$I[[i]] <- inpout$true$I[[i]][inds]
                 inpout$true$e.i[[i]] <- inpout$true$e.i[[i]][inds]
                 inpout$true$errI[[i]] <- inpout$true$errI[[i]][inds]
@@ -733,7 +733,7 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
         inpout$true$logBBmsy <- inpout$true$logBBmsy[inpin$time %in% inpout$time]
         inpout$true$logFFmsy <- inpout$true$logFFmsy[inpin$time %in% inpout$time]
         inpout$true$MSYvec <- inpout$true$MSYvec[inpin$time %in% inpout$time]
-        inpout$true$Fmsyvec <- inpout$true$Fmsyvec[inpin$time %in% inpout$time]        
+        inpout$true$Fmsyvec <- inpout$true$Fmsyvec[inpin$time %in% inpout$time]
     }
 
     return(inpout)
@@ -756,7 +756,7 @@ remove.priors <- function(inp, priors = "all"){
         if(class(prior[[1]]) == "list"){
             for(i in 1:length(prior[[1]])){
                 prior[[1]][[i]][3] <- 0
-            }                    
+            }
         }else{
             prior[[1]][3] <- 0
         }
@@ -769,7 +769,7 @@ remove.priors <- function(inp, priors = "all"){
         if(class(prior[[1]]) == "list"){
             for(i in 1:length(prior[[1]])){
                 res[i] <- prior[[1]][[i]][3]
-            }                    
+            }
         }else{
             res <- prior[[1]][3]
         }
@@ -788,7 +788,7 @@ remove.priors <- function(inp, priors = "all"){
     activatedpriors <- possiblepriors[as.logical(unlist(aplist))]
 
     ## remove all or specified ones
-    deactpriors <- if(priors[1] == "all") possiblepriors else priors    
+    deactpriors <- if(priors[1] == "all") possiblepriors else priors
 
     ## warning for misspecified priors
     deactpriors <- deactpriors[as.character(deactpriors) %in% possiblepriors]
@@ -808,11 +808,11 @@ remove.priors <- function(inp, priors = "all"){
 #' @title Calculates the Bmsy/K ratio
 #' @param rep Result of fit.spict().
 #' @author T.K. Mildenberger <t.k.mildenberger@gmail.com>
-#' @return Bmsy/K 
+#' @return Bmsy/K
 #' @export
 calc.bmsyk <- function(rep){
     if(class(rep) != "spictcls" ||
-       !"par.fixed" %in% names(rep)) stop("Please provide an object fitted with 'fit.spict'.")    
+       !"par.fixed" %in% names(rep)) stop("Please provide an object fitted with 'fit.spict'.")
     bmsy <- get.par("logBmsy", rep, exp=TRUE)[,2]
     k <- get.par("logK", rep, exp=TRUE)[,2]
     return(bmsy/k)
@@ -838,12 +838,12 @@ calc.om <- function(rep){
     bdiff <- blbmsy[,3] - blbmsy[,1]
     fdiff <- flfmsy[,3] - flfmsy[,1]
     ## order of magnitude
-    omagnib <- abs(floor(log10(blbmsy[,3])) - floor(log10(blbmsy[,1])))    
+    omagnib <- abs(floor(log10(blbmsy[,3])) - floor(log10(blbmsy[,1])))
     omagnif <- abs(floor(log10(flfmsy[,3])) - floor(log10(flfmsy[,1])))
 
     res <- round(cbind(rbind(blbmsy[,1:3],flfmsy[,1:3]),c(bdiff,fdiff),c(omagnib,omagnif)),2)
     colnames(res) <- c("lower","est","upper",
-                       "CI range","order magnitude")
+                       "CI range","order of magnitude")
     rownames(res) <- c("B/Bmsy","F/Fmsy")
     return(res)
 }
@@ -874,7 +874,7 @@ sim.eq <- function(rep, logF, nobs = 100, opt = 1){
     inpin$ini$logsde <- log(1e-6)
     if(length(inpin$ini$logsdi) > 1){
         for(i in 1:length(inpin$ini$logsdi)){
-            inpin$ini$logsdi[[i]] <- log(1e-6)  
+            inpin$ini$logsdi[[i]] <- log(1e-6)
         }
     }else{
         inpin$ini$logsdi <- log(1e-6)
@@ -884,10 +884,10 @@ sim.eq <- function(rep, logF, nobs = 100, opt = 1){
     inpin$ini$logB <- NULL
     inpin$ini$logu <- NULL
     inpin$ini$logmre <- NULL
-    inpin$ini$SARvec <- NULL        
+    inpin$ini$SARvec <- NULL
     inpin$MSYregime <- NULL
     ## sim and predict catches
-    inpin <- check.inp(inpin)        
+    inpin <- check.inp(inpin)
     sim <- sim.spict(inpin, nobs = nobs)
     predcatch <- sim$true$C
     ## account for quaterly catches
@@ -914,7 +914,7 @@ change.euler <- function(inp, dteuler = 1/16){
     inpin <- check.inp(inp)
     inpout <- inpin
     inpout$dteuler <- dteuler
-    inpout$MSYregime <- NULL        
+    inpout$MSYregime <- NULL
     inpout$time <- NULL
     inpout$dt <- NULL
     inpout$ns <- NULL
@@ -954,7 +954,7 @@ change.euler <- function(inp, dteuler = 1/16){
     inpout$osar.subset <- NULL
     inpout$logmcovariatein <- NULL
     inpout$ini$logr <- NULL  ## 2 for multiple MSYregimes
-    inpout$ini$logm <- NULL        
+    inpout$ini$logm <- NULL
     inpout$ini$logF <- NULL
     inpout$ini$logu <- NULL
     inpout$ini$logB <- NULL
@@ -990,7 +990,7 @@ check.euler <- function(rep, dteuler = 1/64, nobs = 100, Frange = NULL){
     repin <- rep
     ## check
     if(class(repin) != "spictcls" ||
-       !"par.fixed" %in% names(repin)) stop("Please provide an object fitted with 'fit.spict'.")    
+       !"par.fixed" %in% names(repin)) stop("Please provide an object fitted with 'fit.spict'.")
     ## current dteuler
     dteulerin <- repin$inp$dteuler
     ## use new dteuler
@@ -1005,9 +1005,9 @@ check.euler <- function(rep, dteuler = 1/64, nobs = 100, Frange = NULL){
                     nobs=nobs, opt=1, tol = 1e-6,
                     maximum = TRUE)
     ## reference levels
-    msy <- as.numeric(get.par("MSY", repin)[,2]) 
-    fmsy <- as.numeric(get.par("logFmsy", repin, exp=TRUE)[,2]) 
-    bmsy <- as.numeric(get.par("logBmsy", repin, exp=TRUE)[,2]) 
+    msy <- as.numeric(get.par("MSY", repin)[,2])
+    fmsy <- as.numeric(get.par("logFmsy", repin, exp=TRUE)[,2])
+    bmsy <- as.numeric(get.par("logBmsy", repin, exp=TRUE)[,2])
     ## reference levels with specified dteuler
     msyiter <- opt$objective ## max(res, na.rm = TRUE)
     fmsyiter <- exp(opt$maximum) ## fs[which.max(res)]
