@@ -571,18 +571,26 @@ get.prod.regimes <- function(inp, years = NULL){
 
 
 #' @name shorten.inp
-#' @title Shorten time series of input data to specified length
+#' @title Shorten time series of input data to specified range
 #' @param inp An input list containing data.
-#' @param mintime Minimum time to include in the modified data
-#'     (default: NULL).
-#' @param maxtime Maximum time to include in the modified data
-#'     (default: NULL).
-#' @details Time is given in decimal notation (e.g. 2005.3). If only
-#'     one of the arguments 'minyear' or 'maxyear' is used, the
-#'     function shortens the time series from either end to the
-#'     respective time.
+#' @param start Starting time. If \code{NULL} (default), keep from the start of the time series.
+#' @param end Ending time. If \code{NULL} (default), keep until the end of the time series.
+#' @details Time is given in decimal notation (e.g. 2005.3). If both \code{start} and \code{end}
+#' are \code{NULL}, \code{inp} is returned after running \code{check.inp}.
 #' @author T.K. Mildenberger <t.k.mildenberger@gmail.com>
-#' @return Inp list with shortened time series.
+#' @return List of shortened input time series and input variables as it is returned by \code{\link{check.inp}}
+#' @seealso \code{\link{check.inp}}
+#' @examples
+#' inp <- pol$albacore
+#'
+#' ## Keep only years from 1973 onwards
+#' shorten.inp(inp, mintime = 1973)
+#'
+#' ## Keep years until 1985
+#' shorten.inp(inp, maxtime = 1985)
+#'
+#' ## Empty data set gives an error
+#' shorten.inp(inp, mintime = 1910, maxtime = 1930)
 #' @export
 shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
     inpin <- check.inp(inp)
@@ -590,20 +598,15 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
 
     ## function to find closest time
     get.inds <- function(timevec, mintime, maxtime){
-        ## set to limits if NULL or incorrectly set
         mintimePot <- min(floor(timevec))
         maxtimePot <- max(ceiling(timevec))
-        if(is.na(mintime) || !is.numeric(mintime) ||
-           mintime < mintimePot || mintime > maxtimePot) mintime <- mintimePot
-        if(is.na(maxtime) || !is.numeric(maxtime) ||
-           maxtime < mintimePot || maxtime > maxtimePot) maxtime <- maxtimePot
+        ## set to limits if NULL or incorrectly set
+        if (is.na(mintime) || !is.numeric(mintime) || mintime < mintimePot)
+          mintime <- mintimePot
+        if (is.na(maxtime) || !is.numeric(maxtime) || maxtime > maxtimePot)
+          maxtime <- maxtimePot
         ## indices
-        ind <- 1:length(timevec)
-        diffmin <- timevec - mintime
-        indmin <- ind[min(which(diffmin >= 0))]
-        diffmax <- maxtime - timevec
-        indmax <-  ind[max(which(diffmax >= 0))]        
-        inds <- indmin:indmax
+        inds <- which(timevec >= mintime & timevec <= maxtime)
         return(inds)
     }
 
@@ -616,8 +619,8 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
     inpout$timeCpred <- inpin$timeCpred[inds]
     inpout$dtcp <- inpin$dtcp[inds]
     inpout$nobsC <- length(inpout$obsC)
-    inpout$obsidC <- seq(length(inpout$obsC))
-    
+    inpout$obsidC <- seq_along(inpout$obsC)
+
     ## index
     if(length(inpin$obsI) > 0){
         for(i in 1:length(inpin$obsI)){
@@ -629,24 +632,25 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
         if(!is.null(inpin$stdevfacI)){
             for(i in 1:length(inpin$obsI)){
                 inpout$stdevfacI[[i]] <- inpin$stdevfacI[[i]][inds]
-            }   
+            }
         }
         inpout$nobsI <- length(inpout$obsI[[1]])
     }
 
     ## effort
     if(length(inpin$obsE) > 0){
-        inds <- get.inds(inpin$timeE,mintime,maxtime)        
+        inds <- get.inds(inpin$timeE,mintime,maxtime)
         inpout$obsE <- inpin$obsE[inds]
         inpout$timeE <- inpin$timeE[inds]
         inpout$stdevfacE <- inpin$stdevfacE[inds]
-        inpout$dte <- inpin$dte[inds]        
+        inpout$dte <- inpin$dte[inds]
     }
-    
+
     timeobsall <- sort(c(inpout$timeC, inpout$timeC + inpout$dtc,
                          unlist(inpout$timeI),
                          inpout$timeE, inpout$timeE + inpout$dte))
-    
+    if (length(timeobsall) == 0) stop("All yars are outside the range ", mintime, "-", maxtime)
+
     # Time point to predict catches until
     inpout$timepredc <- max(timeobsall)
     inpout$timepredi <- max(timeobsall)
