@@ -740,14 +740,14 @@ shorten.inp <- function(inp, mintime = NULL, maxtime = NULL){
 }
 
 
-#' @name remove.priors
-#' @title Removes priors from an input list
+#' @name deactivate.priors
+#' @title Deactivates priors in an input list
 #' @param inp An input list containing data.
-#' @param priors Priors to remove. By default ('all') all priors are removed.
+#' @param priors Priors to deactivate. By default ('all') all priors are deactivated.
 #' @author T.K. Mildenberger <t.k.mildenberger@gmail.com>
 #' @return Inp list without priors.
 #' @export
-remove.priors <- function(inp, priors = "all"){
+deactivate.priors <- function(inp, priors = "all"){
     inpin <- check.inp(inp)
     inpout <- inpin
 
